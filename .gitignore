@@ -1,0 +1,27 @@
+# Exclusions for SkyePlay push
+spotube/
+ablate.json
+modifications.json
+text.json
+venv/
+*.pyc
+__pycache__/
+start.ps1
+
+# Flutter/Dart defaults
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Windows defaults
+bin/
+obj/
+*.user
+*.suo
+*.sln
+*.vcxproj
+*.filters

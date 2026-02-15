@@ -1,0 +1,41 @@
+[SkyePlay Debug Logs - 2026-02-16]
+Issue: MPV "Failed to open" error despite manifest arrival.
+
+--- LOG START ---
+media_kit: ANGLESurfaceManager: Direct3D Feature Level: 11_0
+1 1
+media_kit: VideoOutput: Create Texture: 2245316672336
+media_kit: VideoOutput: Using H/W rendering.
+VideoOutput.Resize
+{handle: 2245314820912, id: 2245316672336, rect: {height: 0, left: 0, top: 0, width: 0}}
+NativeVideoController: Texture ID: 2245316672336
+
+📥 Cache Start: XFkzRNyygfk -> C:\Users\aniro\AppData\Local\Temp/cache_XFkzRNyygfk.m4a
+🌐 Fetching manifest for: XFkzRNyygfk
+📄 Manifest received: XFkzRNyygfk (911485 bytes)
+🔗 Proxy Request: XFkzRNyygfk
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+MPV Error: Failed to open http://127.0.0.1:53951/stream?id=XFkzRNyygfk.
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+⏳ Proxy waiting for XFkzRNyygfk: 0 bytes...
+! Range Not Satisfiable: Requested 0, have 0
+--- LOG END ---
+
+Analysis Observation:
+1. Manifest was fetched successfully (911485 bytes).
+2. Proxy Request arrived immediately after.
+3. Proxy started waiting for 32KB buffer.
+4. downloadedBytes stayed at 0 even after 5-10 iterations (500ms-1s).
+5. MPV gave up (Timeout).
+6. Proxy was still waiting after the error.
+
+Hypothesis: 
+The stream from youtube_explode is either not starting or the sink.add/file-write is being buffered by the OS/Sink and not visible to the RandomAccessFile reader in time.
+Next steps: Try forcing sink.flush() on the first few chunks or reducing the initial wait requirement.
